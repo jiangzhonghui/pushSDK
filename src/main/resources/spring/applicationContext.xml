@@ -1,0 +1,97 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"  
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:c="http://www.springframework.org/schema/c"
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd">
+
+    <context:property-placeholder ignore-unresolvable="true"
+			location="classpath*:/application.properties" />	
+			
+	<context:component-scan base-package="com.duowan.xgame.mobile.rest.*" />
+	
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<bean id="persistenceUnitManager"
+		class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+		<property name="persistenceXmlLocations">
+			<list>
+				<value>classpath:/META-INF/persistence.xml</value>
+			</list>
+		</property>
+		
+		 <property name="dataSourceLookup">
+            <bean
+                class="org.springframework.jdbc.datasource.lookup.BeanFactoryDataSourceLookup" />
+	        </property>
+	</bean>
+
+  
+	<jpa:repositories base-package="com.cd.minecraft.mclauncher.repository"
+		transaction-manager-ref="transactionManager"
+		entity-manager-factory-ref="entityManagerFactory" />
+	
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
+	
+	<bean id="restGroundHogDS" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="${jdbc.driver}" />
+			<property name="url" value="${jdbc.url}" />
+			<property name="username" value="${jdbc.username}" />
+			<property name="password" value="${jdbc.password}" />
+			<property name="maxActive" value="${jdbc.pool.maxActive}" />
+			<property name="maxIdle" value="${jdbc.pool.maxIdle}" />
+			<property name="defaultAutoCommit" value="false" />
+			<property name="timeBetweenEvictionRunsMillis" value="900000" />
+			<property name="minEvictableIdleTimeMillis" value="1800000" />
+	</bean>
+		
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter" ref="hogJpaVendorAdapter" />
+		<property name="persistenceUnitManager" ref="persistenceUnitManager" />
+		<property name="persistenceUnitName" value="restPersistenceGroundHog" />
+	</bean>
+
+	<bean id="hogJpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="showSql" value="true" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	
+	   	
+	<bean id="dataJedisPool" class="redis.clients.jedis.ShardedJedisPool">
+        <constructor-arg index="0" ref="jedisPoolConfig" />
+        <constructor-arg index="1">
+            <list>
+                <ref bean="tb.data.jedis.shardInfo" />
+            </list>
+        </constructor-arg>
+    </bean>
+	<bean id="tb.data.jedis.shardInfo" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="${redis.host}" />
+        <constructor-arg index="1" value="${redis.port}" />
+        <constructor-arg index="2" value="5000" />
+        <constructor-arg index="3" value="10" />
+    </bean>
+    
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+	</bean>
+	
+	<bean id="redisUtil" class="com.duowan.xgame.mobile.service.RedisUtil" >
+		<constructor-arg index="0" ref="dataJedisPool" />
+	</bean>
+	
+	
+</beans>

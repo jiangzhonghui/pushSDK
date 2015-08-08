@@ -1,0 +1,49 @@
+package com.duowan.xgame.mobile.util;
+
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.security.crypto.keygen.KeyGenerators;
+
+public class SpringSecurityEncryptor {
+	
+	private final static String SALT="";
+	private final static String PASSWORD="";
+	
+	private String createToken(String uid,String timestamp){
+		String planText = uid +"#"+timestamp;
+		TextEncryptor encryptor = Encryptors.text(PASSWORD, SALT);
+		 String encryptedText = encryptor.encrypt(planText);
+		 return encryptedText; 
+	}
+	
+	private String parseToken(String token){
+		TextEncryptor decryptor = Encryptors.text(PASSWORD, SALT);
+        String decryptedText = decryptor.decrypt(token);
+		 return decryptedText; 
+	}
+	
+    public static void main(String[] args) {
+        final String password = "I AM SHERLOCKED";  
+        final String salt = KeyGenerators.string().generateKey();
+
+        TextEncryptor encryptor = Encryptors.text(password, salt);      
+        System.out.println("Salt: \"" + salt + "\"");
+
+        String textToEncrypt = "*royal secrets*";
+        System.out.println("Original text: \"" + textToEncrypt + "\"");
+
+        String encryptedText = encryptor.encrypt(textToEncrypt);
+        System.out.println("Encrypted text: \"" + encryptedText + "\"");
+
+        // Could reuse encryptor but wanted to show reconstructing TextEncryptor
+        TextEncryptor decryptor = Encryptors.text(password, salt);
+        String decryptedText = decryptor.decrypt(encryptedText);
+        System.out.println("Decrypted text: \"" + decryptedText + "\"");
+
+        if(textToEncrypt.equals(decryptedText)) {
+            System.out.println("Success: decrypted text matches");
+        } else {
+            System.out.println("Failed: decrypted text does not match");
+        }       
+    }
+}

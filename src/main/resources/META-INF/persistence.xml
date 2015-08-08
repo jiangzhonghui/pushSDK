@@ -1,0 +1,39 @@
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="restPersistenceGroundHog"
+		transaction-type="RESOURCE_LOCAL">
+<!-- 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		<validation-mode>CALLBACK</validation-mode> -->
+		
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<class>com.cd.minecraft.mclauncher.entity.Account</class>
+		<class>com.cd.minecraft.mclauncher.entity.PublicMap</class>
+    	<properties>
+		    <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
+		  <property name="hibernate.connection.url" value="jdbc:mysql://42.96.142.170:3306/onlinegamedb?characterEncoding=utf-8" />
+		    <property name="hibernate.connection.username" value="onlinegamedb"/>
+			<property name="hibernate.connection.password" value="onlinegamedb"/>
+			 
+		      <!--<property name="hibernate.connection.url" value="jdbc:mysql://127.0.0.1:3306/mcpelauncherdb?characterEncoding=utf-8" />
+		    <property name="hibernate.connection.username" value="root"/>
+			<property name="hibernate.connection.password" value="mcpelauncherdb"/>  --> 
+			
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
+			<property name="hibernate.archive.autodetection" value="false" />
+			<property name="hibernate.transaction.auto_close_session"
+				value="false" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
+			<property name="hibernate.c3p0.max_size" value="100" />
+	        <property name="hibernate.c3p0.min_size" value="0" />
+	        <property name="hibernate.c3p0.acquire_increment" value="1" />
+	        <property name="hibernate.c3p0.idle_test_period" value="300" />
+	        <property name="hibernate.c3p0.max_statements" value="0" />
+	        <property name="hibernate.c3p0.timeout" value="100" />
+		</properties>
+	</persistence-unit>
+</persistence>
